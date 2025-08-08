@@ -1,0 +1,17 @@
+{
+  "name": "prayer-time-bot",
+  "version": "1.0.0",
+  "description": "A Telegram bot to send prayer time notifications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "telegraf": "^4.16.3"
+  }
+}
