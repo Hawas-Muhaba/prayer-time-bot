@@ -1,4 +1,3 @@
-
 // At the top with the other require statements
 require("dotenv").config();
 const { Telegraf, Markup } = require("telegraf"); // We now need 'Markup'
@@ -49,7 +48,7 @@ async function sendPrayerTimes(ctx, latitude, longitude){
 
           await ctx.reply(responseMessage);
     }else{
-        await ctx.reply('Sorry, Icoudn\'t fetch the prayer times for teh location. Please try again.');
+        await ctx.reply('Sorry, I couldn\'t fetch the prayer times for the location. Please try again.');
     }
 }
 
@@ -62,7 +61,7 @@ bot.on('location', async(ctx)=>{
     await sendPrayerTimes(ctx, latitude,longitude);
 });
 
-//--Handler for non location sharing devices like desktop, which is by text based. they tyoe the city
+//--Handler for non location sharing devices like desktop, which is by text based. they type the city
 
 bot.on('text', async (ctx)=>{
     const messageText = ctx.message.text;
@@ -72,7 +71,7 @@ bot.on('text', async (ctx)=>{
 });
 
 bot.launch();
-console.log('Bot is running....');
+console.log('Bot is running...');
 
 process.once('SIGINT', ()=> bot.stop('SIGINT'));
 process.once('SIGTERM', ()=> bot.stop('SIGTERM'));
