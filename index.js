@@ -5,6 +5,9 @@ const { Telegraf, Markup } = require("telegraf"); // We now need 'Markup'
 //import our custom function from api.js
 const { getPrayerTimes } = require("./api.js");
 
+//import scheduler
+const { startScheduler } = require('./scheduler');
+
 // Import the geocodeCity function
 const { geocodeCity } = require("./geocode.js");
 
@@ -60,7 +63,7 @@ async function sendPrayerTimes(ctx, latitude, longitude){
 
 bot.on('location', async(ctx)=>{
     const {latitude, longitude} = ctx.message.location;
-    crossOriginIsolated.log('Recieved location via button: Lat=${latitude}, Lon=${longitude}');
+    console.log(`Received location via button: Lat=${latitude}, Lon=${longitude}`);
     await ctx.reply('Location recieved', Markup.removeKeyboard());
     await sendPrayerTimes(ctx, latitude,longitude);
 });
@@ -119,6 +122,7 @@ bot.on('text', async (ctx) => {
 
 bot.launch();
 console.log('Bot is running...');
+startScheduler(bot)
 
 process.once('SIGINT', ()=> bot.stop('SIGINT'));
 process.once('SIGTERM', ()=> bot.stop('SIGTERM'));

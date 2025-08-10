@@ -50,9 +50,9 @@ async function saveUserLocation(chat_id, first_name, latitude,longitude) {
 }
 
 async function getAllActiveUsers(){
-    const db = await dbPromise;
-    //selec users where active,1
-    const users = await db.all('SELECT * FROM user Where is_active = 1');
+    const db = await openDb();
+    const users = await db.all('SELECT * FROM user WHERE is_active = 1');
+    await db.close();
     return users;
 }
 
