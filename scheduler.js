@@ -1,179 +1,101 @@
-// scheduler.js
-require('dotenv').config();
+// In scheduler.js
 const cron = require('node-cron');
 const axios = require('axios');
 const { DateTime } = require('luxon');
-const db = require('./database'); // uses getAllActiveUsers()
+const db = require('./database');
 
-// default config
-const DEFAULT_PLANNER_CRON = process.env.DAILY_PLAN_CRON || '0 0 * * *'; // every day at 00:00 server time
+const DEFAULT_PLANNER_CRON = process.env.DAILY_PLAN_CRON || '0 1 * * *';
 const DEFAULT_METHOD = parseInt(process.env.ALADHAN_METHOD || '2', 10);
-const LOOK_AHEAD_HOURS = parseInt(process.env.LOOK_AHEAD_HOURS || '24', 10);
+const LOOK_AHEAD_HOURS = 24;
 
-// In-memory store of scheduled timeouts (key -> timeoutId)
 const scheduledTimeouts = new Map();
 
 function clearAllScheduled() {
-  for (const tid of scheduledTimeouts.values()) {
-    clearTimeout(tid);
-  }
-  scheduledTimeouts.clear();
+    for (const tid of scheduledTimeouts.values()) clearTimeout(tid);
+    scheduledTimeouts.clear();
 }
 
 function scheduleOne(key, targetMs, sendFn) {
-  const now = Date.now();
-  const delay = targetMs - now;
-  if (delay <= 0) {
-    return null;
-  }
+    const delay = targetMs - Date.now();
+    if (delay <= 0) return null;
+    if (scheduledTimeouts.has(key)) clearTimeout(scheduledTimeouts.get(key));
 
-  if (scheduledTimeouts.has(key)) {
-    clearTimeout(scheduledTimeouts.get(key));
-    scheduledTimeouts.delete(key);
-  }
+    const tid = setTimeout(() => {
+        sendFn().finally(() => scheduledTimeouts.delete(key));
+    }, delay);
 
-  const tid = setTimeout(async () => {
-    try {
-      await sendFn();
-    } catch (err) {
-      console.error('Notifier sendFn error:', err);
-    } finally {
-      scheduledTimeouts.delete(key);
-    }
-  }, delay);
-
-  scheduledTimeouts.set(key, tid);
-  return tid;
+    scheduledTimeouts.set(key, tid);
+    return tid;
 }
 
-async function fetchAladhanTimings(lat, lon, method = DEFAULT_METHOD) {
-  const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`;
-  const res = await axios.get(url);
-  if (!res.data || !res.data.data) {
-    throw new Error('Aladhan: unexpected response');
-  }
-  return res.data.data;
+async function fetchAladhanTimings(lat, lon, method) {
+    const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`;
+    const res = await axios.get(url);
+    if (!res.data || !res.data.data) throw new Error('Aladhan: unexpected response');
+    return res.data.data;
 }
 
 function startScheduler(bot, options = {}) {
-  const plannerCron = options.plannerCron || DEFAULT_PLANNER_CRON;
-  const lookAheadHours = options.lookAheadHours || LOOK_AHEAD_HOURS;
-  const dryRun = !!options.dryRun;
+    const plannerCron = options.plannerCron || DEFAULT_PLANNER_CRON;
+    const dryRun = !!options.dryRun;
 
-  if (!dryRun && (!bot || !bot.telegram)) {
-    throw new Error('startScheduler requires a bot instance unless dryRun=true');
-  }
+    console.log(`Scheduler starting. plannerCron="${plannerCron}"`);
 
-  console.log(`Scheduler starting. plannerCron="${plannerCron}", lookAheadHours=${lookAheadHours}, dryRun=${dryRun}`);
-
-  async function dailyPlanner() {
-    console.log('Scheduler: running daily planner at', new Date().toISOString());
-
-    clearAllScheduled();
-
-    let users;
-    try {
-      users = await db.getAllActiveUsers();
-    } catch (err) {
-      console.error('Scheduler: failed to fetch users from DB:', err);
-      return;
-    }
-
-    if (!Array.isArray(users) || users.length === 0) {
-      console.log('Scheduler: no active users found');
-      return;
-    }
-
-    for (const user of users) {
-      const chatId = user.chat_id;
-      const lat = user.latitude;
-      const lon = user.longitude;
-      const method = user.method || DEFAULT_METHOD;
-
-      if (!chatId || lat == null || lon == null) {
-        console.warn('Scheduler: skipping user with missing data', user);
-        continue;
-      }
-
-      try {
-        const aladhan = await fetchAladhanTimings(lat, lon, method);
-        const timings = aladhan.timings;
-        const dateStr = aladhan.date?.gregorian?.date; // usually "DD-MM-YYYY"
-        const timezone = aladhan.meta?.timezone || user.timezone || 'UTC';
-
-        const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-
-        for (const prayer of prayers) {
-          const timeRaw = timings?.[prayer];
-          if (!timeRaw) continue;
-
-          const m = timeRaw.toString().match(/(\d{1,2}:\d{2})/);
-          if (!m) continue;
-          const hhmm = m[1];
-
-          // Parse with correct format for DD-MM-YYYY
-          const dt = DateTime.fromFormat(`${dateStr} ${hhmm}`, 'dd-MM-yyyy HH:mm', { zone: timezone });
-          if (!dt.isValid) {
-            console.warn('Scheduler: invalid DateTime for', { chatId, dateStr, hhmm, timezone, prayer });
-            continue;
-          }
-// Define our notification lead time in minutes
-const NOTIFICATION_LEAD_MINUTES = 10;
-
-// Calculate the target time for the notification (10 minutes before the prayer)
-const notificationTimeMs = dt.toMillis() - (NOTIFICATION_LEAD_MINUTES * 60 * 1000);
-
-// Now, we check if this notification time is in the future and within our scheduling window
-const diffHours = (notificationTimeMs - Date.now()) / (1000 * 60 * 60);
-if (diffHours <= 0 || diffHours > lookAheadHours) {
-    // This prayer time has already passed for today, or is too far in the future
-    continue;
-}
-
-const key = `${chatId}:${dateStr}:${prayer}`;
-
-const sendFn = async () => {
-    // --- IMPROVE THE MESSAGE ---
-    const text = `Reminder: ${prayer} prayer is in ${NOTIFICATION_LEAD_MINUTES} minutes. 🙏\nTime: ${hhmm} (${timezone})`;
-    
-    if (dryRun) {
-        console.log(`[dryRun] would send to ${chatId}:`, text);
-        return;
-    }
-    try {
-        await bot.telegram.sendMessage(chatId, text);
-        console.log(`Scheduler: sent ${prayer} to ${chatId} at ${new Date().toISOString()}`);
-    } catch (err) {
-        console.error(`Scheduler: failed to send ${prayer} to ${chatId}:`, err?.response?.data || err.message);
-    }
-};
-
-// Schedule the job for the calculated NOTIFICATION time
-scheduleOne(key, notificationTimeMs, sendFn);
-
-          scheduleOne(key, targetMs, sendFn);
+    async function dailyPlanner() {
+        console.log('Scheduler: running daily planner at', new Date().toISOString());
+        clearAllScheduled();
+        let users;
+        try {
+            users = await db.getAllActiveUsers();
+        } catch (err) {
+            console.error('Scheduler: failed to fetch users from DB:', err);
+            return;
         }
-      } catch (err) {
-        console.error('Scheduler: failed to schedule for user', user.chat_id, err.message || err);
-      }
+
+        if (!users || users.length === 0) {
+            console.log('Scheduler: no active users found, planner finished.');
+            return;
+        }
+
+        console.log(`Scheduler: Found ${users.length} active user(s). Processing...`);
+
+        for (const user of users) {
+            try {
+                const aladhan = await fetchAladhanTimings(user.latitude, user.longitude, user.method || DEFAULT_METHOD);
+                const timings = aladhan.timings;
+                const dateStr = aladhan.date?.gregorian?.date;
+                const timezone = aladhan.meta?.timezone || 'UTC';
+                const prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+
+                for (const prayer of prayers) {
+                    const hhmm = timings?.[prayer]?.toString().match(/(\d{1,2}:\d{2})/)?.[1];
+                    if (!hhmm) continue;
+
+                    const dt = DateTime.fromFormat(`${dateStr} ${hhmm}`, 'dd-MM-yyyy HH:mm', { zone: timezone });
+                    if (!dt.isValid) continue;
+
+                    const NOTIFICATION_LEAD_MINUTES = 10;
+                    const notificationTimeMs = dt.toMillis() - (NOTIFICATION_LEAD_MINUTES * 60 * 1000);
+                    const diffHours = (notificationTimeMs - Date.now()) / (1000 * 60 * 60);
+                    if (diffHours <= 0 || diffHours > LOOK_AHEAD_HOURS) continue;
+
+                    const key = `${user.chat_id}:${dateStr}:${prayer}`;
+                    const sendFn = () => bot.telegram.sendMessage(user.chat_id, `Reminder: ${prayer} prayer is in ${NOTIFICATION_LEAD_MINUTES} minutes. 🙏`);
+                    
+                    scheduleOne(key, notificationTimeMs, sendFn);
+                    const notifyTime = new Date(notificationTimeMs).toLocaleTimeString('en-US', { timeZone: timezone });
+                    console.log(`  -> Scheduled ${prayer} for ${user.chat_id} at ${notifyTime}`);
+                }
+            } catch (err) {
+                console.error(`Scheduler: failed to process user ${user.chat_id}:`, err.message || err);
+            }
+        }
+        console.log('Scheduler: daily planner finished at', new Date().toISOString());
     }
 
-    console.log('Scheduler: daily planner finished at', new Date().toISOString());
-  }
-
-  dailyPlanner().catch((e) => console.error('Scheduler initial run failed:', e));
-
-  const task = cron.schedule(plannerCron, () => {
-    dailyPlanner().catch((e) => console.error('Scheduler dailyPlanner failed:', e));
-  });
-
-  return {
-    stop: () => {
-      task.stop();
-      clearAllScheduled();
-      console.log('Scheduler stopped');
-    },
-  };
+    dailyPlanner().catch((e) => console.error('Scheduler initial run failed:', e));
+    const task = cron.schedule(plannerCron, () => dailyPlanner().catch((e) => console.error('Scheduler dailyPlanner failed:', e)));
+    return { stop: () => { task.stop(); clearAllScheduled(); } };
 }
 
 module.exports = { startScheduler };
