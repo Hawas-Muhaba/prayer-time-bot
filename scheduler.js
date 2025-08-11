@@ -117,28 +117,39 @@ function startScheduler(bot, options = {}) {
             console.warn('Scheduler: invalid DateTime for', { chatId, dateStr, hhmm, timezone, prayer });
             continue;
           }
+// Define our notification lead time in minutes
+const NOTIFICATION_LEAD_MINUTES = 10;
 
-          const targetMs = dt.toMillis();
-          const diffHours = (targetMs - Date.now()) / (1000 * 60 * 60);
-          if (diffHours <= 0 || diffHours > lookAheadHours) {
-            continue;
-          }
+// Calculate the target time for the notification (10 minutes before the prayer)
+const notificationTimeMs = dt.toMillis() - (NOTIFICATION_LEAD_MINUTES * 60 * 1000);
 
-          const key = `${chatId}:${dateStr}:${prayer}`;
+// Now, we check if this notification time is in the future and within our scheduling window
+const diffHours = (notificationTimeMs - Date.now()) / (1000 * 60 * 60);
+if (diffHours <= 0 || diffHours > lookAheadHours) {
+    // This prayer time has already passed for today, or is too far in the future
+    continue;
+}
 
-          const sendFn = async () => {
-            const text = `🕌 Prayer reminder — ${prayer}\nTime: ${hhmm} (${timezone})\nMay your prayer be accepted.`;
-            if (dryRun) {
-              console.log(`[dryRun] would send to ${chatId}:`, text);
-              return;
-            }
-            try {
-              await bot.telegram.sendMessage(chatId, text);
-              console.log(`Scheduler: sent ${prayer} to ${chatId} at ${new Date().toISOString()}`);
-            } catch (err) {
-              console.error(`Scheduler: failed to send ${prayer} to ${chatId}:`, err?.response?.data || err.message);
-            }
-          };
+const key = `${chatId}:${dateStr}:${prayer}`;
+
+const sendFn = async () => {
+    // --- IMPROVE THE MESSAGE ---
+    const text = `Reminder: ${prayer} prayer is in ${NOTIFICATION_LEAD_MINUTES} minutes. 🙏\nTime: ${hhmm} (${timezone})`;
+    
+    if (dryRun) {
+        console.log(`[dryRun] would send to ${chatId}:`, text);
+        return;
+    }
+    try {
+        await bot.telegram.sendMessage(chatId, text);
+        console.log(`Scheduler: sent ${prayer} to ${chatId} at ${new Date().toISOString()}`);
+    } catch (err) {
+        console.error(`Scheduler: failed to send ${prayer} to ${chatId}:`, err?.response?.data || err.message);
+    }
+};
+
+// Schedule the job for the calculated NOTIFICATION time
+scheduleOne(key, notificationTimeMs, sendFn);
 
           scheduleOne(key, targetMs, sendFn);
         }
