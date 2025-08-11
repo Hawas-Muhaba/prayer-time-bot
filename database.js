@@ -35,7 +35,7 @@ async function saveUserLocation(chat_id, first_name, latitude,longitude) {
     
     //update their detail instead of trying new row insertion
     await db.run(
-        `INSERT INTO users (chat_id, first_name, latitude, longitude)
+        `INSERT INTO user (chat_id, first_name, latitude, longitude)
          VALUES (?, ?, ?, ?)
          ON CONFLICT(chat_id) DO UPDATE SET
             first_name = excluded.first_name,
@@ -50,11 +50,10 @@ async function saveUserLocation(chat_id, first_name, latitude,longitude) {
 }
 
 async function getAllActiveUsers(){
-    const db = await dbPromise;
-    //selec users where active,1
-    const users = await db.all('SELECT * FROM users Where is_active = 1');
+    const db = await openDb();
+    const users = await db.all('SELECT * FROM user WHERE is_active = 1');
+    await db.close();
     return users;
 }
 
 module.exports = {setupDatabase, saveUserLocation, getAllActiveUsers};
-
