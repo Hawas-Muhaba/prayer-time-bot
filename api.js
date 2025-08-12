@@ -6,7 +6,7 @@ async function getPrayerTimes(latitude, longitude) {
     try {
         const response = await axios.get(url);
         const prayerTimes = response.data.data.timings;
-        console.log("Prayer Times:", prayerTimes);
+        // console.log("Prayer Times:", prayerTimes);
         return prayerTimes;
     } catch (error) {
         console.error("Failed to fetch prayer times:", error.message);

@@ -2,7 +2,7 @@
 require("dotenv").config();
 const { Telegraf, Markup } = require("telegraf");
 
-const { initializeDatabase, saveUserLocation } = require("./database.js");
+const { initializeDatabase, saveUserLocation, setUserActive, deleteUser } = require("./database.js");
 const { geocodeCity } = require("./geocode.js");
 const { startScheduler } = require("./scheduler.js");
 
@@ -67,6 +67,7 @@ async function main() {
       `**Bank:** -----\n` +
       `**Account:** -------\n` +
       `**Recipient:** The Dev Team`;
+      ctx.reply(donationMessage, { parse_mode: "Markdown" });
   });
   bot.command("settings", (ctx) => {
     ctx.reply(
@@ -91,16 +92,19 @@ async function main() {
 
   bot.action("pause_notifications", async (ctx) => {
     //setuserActive function called
+    await setUserActive(ctx.chat.id, false);
     await ctx.answerCbQuery("Notifications have been paused.");
     await ctx.editMessageText("Notifications are now paused.");
   });
   bot.action("resume_notifications", async (ctx) => {
     // await setUserActive wil be called to  enabled later
+    await setUserActive(ctx.chat.id, false);
     await ctx.answerCbQuery("Notifications have been resumed.");
     await ctx.editMessageText("Notifications are now active!");
   });
   bot.action('delete_my_data', async (ctx)=>{
     //await deleteuser will be enabled
+    await deleteUser(ctx.chat.id);
     await ctx.answerCbQuery('YOur data has been deleted.');
     await ctx.editMessageText('All your data has been deleted. Send a new location to start again.');
   });
@@ -109,7 +113,10 @@ async function main() {
     const { latitude, longitude } = ctx.message.location;
     const { id: chat_id, first_name } = ctx.from;
     await saveUserLocation(chat_id, first_name, latitude, longitude);
-    await ctx.reply("✅ Your location has been saved for daily notifications!\n\n Here's what else you can do: ", mainMenu);
+    await ctx.reply(
+      "✅ Your location has been saved for daily notifications!\n\n Here's what else you can do: ",
+      mainMenu
+    );
     await sendPrayerTimes(ctx, latitude, longitude);
   });
 
@@ -127,7 +134,8 @@ async function main() {
         firstResult.lon
       );
       await ctx.reply(
-        `✅ Location set to "${firstResult.name}" for daily notifications! \n\nHere's what else you can do:`, menuMenu
+        `✅ Location set to "${firstResult.name}" for daily notifications! \n\nHere's what else you can do:`,
+        mainMenu
       );
       await sendPrayerTimes(ctx, firstResult.lat, firstResult.lon);
     } else {
@@ -139,7 +147,7 @@ async function main() {
   console.log("Bot is running...");
 
   // We will use the test cron for now so we can see it work every minute.
-  startScheduler(bot, { plannerCron: "* * * * *" });
+  startScheduler(bot, plannerCron = "* * * * *");
 
   process.once("SIGINT", () => bot.stop("SIGINT"));
   process.once("SIGTERM", () => bot.stop("SIGTERM"));

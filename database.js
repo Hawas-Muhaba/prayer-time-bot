@@ -40,9 +40,21 @@ async function getAllActiveUsers() {
     const db = await initializeDatabase();
     return await db.all('SELECT * FROM users WHERE is_active = 1');
 }
-
+async function setUserActive(chat_id, isActive){
+    const db = await initializeDatabase();
+    const activeState = isActive ? 1: 0;
+    await db.run('UPDATE users SET is_active = ? WHERE chat_id = ?', [activeState, chat_id]);
+    console.log(`Set user ${chat_id} active status to ${isActive}`);
+}
+async function deleteUser(chat_id){
+    const db = await initializeDatabase();
+    await db.run('DELETE FROM users WHERE chat_id = ?', [chat_id]);
+    console.log(`Deleted user ${chat_id} from database.`);
+}
 module.exports = {
     initializeDatabase,
     saveUserLocation,
-    getAllActiveUsers
+    getAllActiveUsers, 
+    setUserActive,
+    deleteUser
 };
