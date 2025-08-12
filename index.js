@@ -1,82 +1,150 @@
 // In index.js
-require('dotenv').config();
-const { Telegraf, Markup } = require('telegraf');
+require("dotenv").config();
+const { Telegraf, Markup } = require("telegraf");
 
-const { initializeDatabase, saveUserLocation } = require('./database.js');
-const { geocodeCity } = require('./geocode.js');
-const { startScheduler } = require('./scheduler.js');
+const { initializeDatabase, saveUserLocation } = require("./database.js");
+const { geocodeCity } = require("./geocode.js");
+const { startScheduler } = require("./scheduler.js");
 
-const { getPrayerTimes } = require('./api.js');
+const { getPrayerTimes } = require("./api.js");
 
 async function main() {
-    await initializeDatabase();
-    console.log("Database is confirmed ready. Starting bot...");
+  await initializeDatabase();
+  console.log("Database is confirmed ready. Starting bot...");
 
-    const bot = new Telegraf(process.env.BOT_TOKEN);
+  const bot = new Telegraf(process.env.BOT_TOKEN);
+  const mainMenu = Markup.keyboard([
+    ["/settings", "/donate"],
+    ["/help"],
+  ]).resize();
 
-    async function sendPrayerTimes(ctx, latitude, longitude) {
-        await ctx.reply('Fetching today\'s prayer times for you...');
+  async function sendPrayerTimes(ctx, latitude, longitude) {
+    await ctx.reply("Fetching today's prayer times for you...");
 
-        const prayerTimes = await getPrayerTimes(latitude, longitude);
+    const prayerTimes = await getPrayerTimes(latitude, longitude);
 
-        if (prayerTimes) {
-            const responseMessage =
-                `Today's Prayer Times:\n\n` +
-                `Fajr: ${prayerTimes.Fajr}\n` +
-                `Dhuhr: ${prayerTimes.Dhuhr}\n` +
-                `Asr: ${prayerTimes.Asr}\n` +
-                `Maghrib: ${prayerTimes.Maghrib}\n` +
-                `Isha: ${prayerTimes.Isha}`;
+    if (prayerTimes) {
+      const responseMessage =
+        `Today's Prayer Times:\n\n` +
+        `Fajr: ${prayerTimes.Fajr}\n` +
+        `Dhuhr: ${prayerTimes.Dhuhr}\n` +
+        `Asr: ${prayerTimes.Asr}\n` +
+        `Maghrib: ${prayerTimes.Maghrib}\n` +
+        `Isha: ${prayerTimes.Isha}`;
 
-            await ctx.reply(responseMessage);
-        } else {
-            await ctx.reply('Sorry, I couldn\'t fetch the prayer times for that location right now.');
-        }
+      await ctx.reply(responseMessage);
+    } else {
+      await ctx.reply(
+        "Sorry, I couldn't fetch the prayer times for that location right now."
+      );
     }
+  }
 
-    const startMessage = `Assalamu alaikum! I can provide prayer times for your location.\n\n` +
-        `📱 **On Mobile:** Use the "Share My Location" button.\n` +
-        `💻 **On Desktop:** Simply type and send the name of your city.`;
+  const startMessage =
+    `Assalamu alaikum! I can provide prayer times for your location.\n\n` +
+    `📱 **On Mobile:** Use the "Share My Location" button.\n` +
+    `💻 **On Desktop:** Simply type and send the name of your city.`;
 
-    bot.start((ctx) => {
-        ctx.reply(startMessage, Markup.keyboard([
-            Markup.button.locationRequest('📍 Share My Location'),
-        ]).resize());
-    });
+  bot.start((ctx) => {
+    ctx.reply(
+      startMessage,
+      Markup.keyboard([
+        Markup.button.locationRequest("📍 Share My Location"),
+      ]).resize()
+    );
+  });
+  bot.help((ctx) => {
+    // You can add more detailed help text here later
+    ctx.reply(
+      "Use /start to set your location, or use the menu buttons for other options."
+    );
+  });
+  //donate command
+  bot.command("donate", (ctx) => {
+    const donationMessage =
+      `Thank you for considering a donation! 🙏\n\n` +
+      `This project is run by volunteers. Your support helps cover server costs.\n\n` +
+      `**Bank:** -----\n` +
+      `**Account:** -------\n` +
+      `**Recipient:** The Dev Team`;
+  });
+  bot.command("settings", (ctx) => {
+    ctx.reply(
+      "User Settings:",
+      Markup.inlineKeyboard([
+        [
+          Markup.button.callback(
+            "⏸️ Pause Notifications",
+            "pause_notifications"
+          ),
+        ],
+        [
+          Markup.button.callback(
+            "▶️ Resume Notifications",
+            "resume_notifications"
+          ),
+        ],
+        [Markup.button.callback("🗑️ Delete My Data", "delete_my_data")],
+      ])
+    );
+  });
 
-    bot.on('location', async (ctx) => {
-        const { latitude, longitude } = ctx.message.location;
-        const { id: chat_id, first_name } = ctx.from;
-        await saveUserLocation(chat_id, first_name, latitude, longitude);
-        await ctx.reply("✅ Your location has been saved for daily notifications!");
-        await sendPrayerTimes(ctx, latitude, longitude);
-    });
+  bot.action("pause_notifications", async (ctx) => {
+    //setuserActive function called
+    await ctx.answerCbQuery("Notifications have been paused.");
+    await ctx.editMessageText("Notifications are now paused.");
+  });
+  bot.action("resume_notifications", async (ctx) => {
+    // await setUserActive wil be called to  enabled later
+    await ctx.answerCbQuery("Notifications have been resumed.");
+    await ctx.editMessageText("Notifications are now active!");
+  });
+  bot.action('delete_my_data', async (ctx)=>{
+    //await deleteuser will be enabled
+    await ctx.answerCbQuery('YOur data has been deleted.');
+    await ctx.editMessageText('All your data has been deleted. Send a new location to start again.');
+  });
 
-    bot.on('text', async (ctx) => {
-        if (ctx.message.text.startsWith('/')) return;
-        const locations = await geocodeCity(ctx.message.text);
+  bot.on("location", async (ctx) => {
+    const { latitude, longitude } = ctx.message.location;
+    const { id: chat_id, first_name } = ctx.from;
+    await saveUserLocation(chat_id, first_name, latitude, longitude);
+    await ctx.reply("✅ Your location has been saved for daily notifications!\n\n Here's what else you can do: ", mainMenu);
+    await sendPrayerTimes(ctx, latitude, longitude);
+  });
 
-        if (locations && locations.length > 0) {
-            const firstResult = locations[0];
-            const { id: chat_id, first_name } = ctx.from;
-            await saveUserLocation(chat_id, first_name, firstResult.lat, firstResult.lon);
-            await ctx.reply(`✅ Location set to "${firstResult.name}" for daily notifications.`);
-            await sendPrayerTimes(ctx, firstResult.lat, firstResult.lon);
-        } else {
-            await ctx.reply('City not found.');
-        }
-    });
+  bot.on("text", async (ctx) => {
+    if (ctx.message.text.startsWith("/")) return;
+    const locations = await geocodeCity(ctx.message.text);
 
-     bot.launch();
-    console.log('Bot is running...');
+    if (locations && locations.length > 0) {
+      const firstResult = locations[0];
+      const { id: chat_id, first_name } = ctx.from;
+      await saveUserLocation(
+        chat_id,
+        first_name,
+        firstResult.lat,
+        firstResult.lon
+      );
+      await ctx.reply(
+        `✅ Location set to "${firstResult.name}" for daily notifications! \n\nHere's what else you can do:`, menuMenu
+      );
+      await sendPrayerTimes(ctx, firstResult.lat, firstResult.lon);
+    } else {
+      await ctx.reply("City not found.");
+    }
+  });
 
-    // We will use the test cron for now so we can see it work every minute.
-    startScheduler(bot, { plannerCron: '* * * * *' });
+  bot.launch();
+  console.log("Bot is running...");
 
-    process.once('SIGINT', () => bot.stop('SIGINT'));
-    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  // We will use the test cron for now so we can see it work every minute.
+  startScheduler(bot, { plannerCron: "* * * * *" });
+
+  process.once("SIGINT", () => bot.stop("SIGINT"));
+  process.once("SIGTERM", () => bot.stop("SIGTERM"));
 }
 
-main().catch(err => {
-    console.error("FATAL: Bot failed to start.", err);
+main().catch((err) => {
+  console.error("FATAL: Bot failed to start.", err);
 });
