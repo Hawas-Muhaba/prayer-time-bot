@@ -66,6 +66,13 @@ async function deleteUser(chat_id){
     await db.run('DELETE FROM users WHERE chat_id = ?', [chat_id]);
     console.log(`Deleted user ${chat_id} from database.`);
 }
+async function getTotalUserCount() {
+  const db = await initializeDatabase();
+  // The 'COUNT(*)' SQL function is highly optimized for counting rows.
+  // We use 'as count' to give the result column a name.
+  const result = await db.get("SELECT COUNT(*) as count FROM users");
+  return result.count;
+}
 module.exports = {
     initializeDatabase,
     saveUserLocation,
@@ -73,5 +80,6 @@ module.exports = {
     setUserActive,
     deleteUser,
     setUserLanguage,
-    getUser
+    getUser,
+    getTotalUserCount
 };

@@ -9,8 +9,10 @@ const {
   saveUserLocation,
   setUserLanguage,
   getUser,
+  getAllActiveUsers,
   setUserActive,
   deleteUser,
+  getTotalUserCount
 } = require("./database.js");
 const { getPrayerTimes } = require("./api.js");
 const { geocodeCity } = require("./geocode.js");
@@ -228,19 +230,41 @@ const getMainMenu = (lang) => {
 //       "Thank you for your interest! The feedback feature is coming soon."
 //     );
 //   });
-  bot.on("location", async (ctx) => {
-    const user = await getUser(ctx.from.id);
-    const lang = user?.language_code || "en";
-    const { latitude, longitude } = ctx.message.location;
-    await saveUserLocation(
-      ctx.from.id,
-      ctx.from.first_name,
-      latitude,
-      longitude
+bot.command("stats", async (ctx) => {
+  // 1. Get the admin ID from the environment variables
+  const adminId = process.env.ADMIN_USER_ID;
+
+  // 2. Security Check: Is the person sending this command the admin?
+  // We compare their ID to the one in our .env file.
+  if (!adminId || ctx.from.id.toString() !== adminId) {
+    console.log(`Unauthorized /stats attempt by user: ${ctx.from.id}`);
+    // Don't even reply, just ignore the command for non-admins.
+    return;
+  }
+
+  try {
+    // 3. If they are the admin, get the user count.
+    const totalUsers = await getTotalUserCount();
+    const activeUsers = (await getAllActiveUsers()).length; // We can reuse this function
+
+    // 4. Create a nice status message.
+    const statsMessage =
+      `📊 **Bot Statistics** 📊\n\n` +
+      `- **Total Users:** ${totalUsers}\n` +
+      `- **Active Users (Notifications On):** ${activeUsers}`;
+
+    // 5. Reply to the admin with the stats.
+    await ctx.reply(statsMessage, { parse_mode: "Markdown" });
+
+    // Also, log it to the server console for your records.
+    console.log(
+      `Admin stats requested. Total users: ${totalUsers}, Active users: ${activeUsers}`
     );
-    await ctx.reply(t(lang, "LOCATION_SAVED"), getMainMenu(lang));
-    await sendPrayerTimes(ctx, latitude, longitude);
-  });
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    await ctx.reply("Sorry, there was an error fetching the stats.");
+  }
+});
  bot.hears([...allCmdTexts("MENU_FEEDBACK"), "/feedback"], async (ctx) => {
    const user = await getUser(ctx.from.id);
    const lang = user?.language_code || "en";
@@ -258,6 +282,21 @@ const getMainMenu = (lang) => {
      ])
    );
  });
+  bot.on("location", async (ctx) => {
+    const user = await getUser(ctx.from.id);
+    const lang = user?.language_code || "en";
+    const { latitude, longitude } = ctx.message.location;
+    await saveUserLocation(
+      ctx.from.id,
+      ctx.from.first_name,
+      latitude,
+      longitude
+    );
+    await ctx.reply(t(lang, "LOCATION_SAVED"), getMainMenu(lang));
+    await sendPrayerTimes(ctx, latitude, longitude);
+  });
+
+ 
 
   bot.hears(/^(?!\/).+/, async (ctx) => {
     const user = await getUser(ctx.from.id);
@@ -316,7 +355,7 @@ const getMainMenu = (lang) => {
 }
 
 const PORT = process.env.PORT || 3000;
-https.createServer((req, res)=>{
+http.createServer((req, res)=>{
     res.writeHead(200, {'Content-Type':'text/plain'});
     res.end('Bot is alive and running:\n');
 }).listen(PORT,()=>{
