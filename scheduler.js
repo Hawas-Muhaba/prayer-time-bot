@@ -80,7 +80,11 @@ function startScheduler(bot, options = {}) {
                     if (diffHours <= 0 || diffHours > LOOK_AHEAD_HOURS) continue;
 
                     const key = `${user.chat_id}:${dateStr}:${prayer}`;
-                    const sendFn = () => bot.telegram.sendMessage(user.chat_id, `Reminder: ${prayer} prayer is in ${NOTIFICATION_LEAD_MINUTES} minutes. 🙏`);
+                    const sendFn = () =>
+                      bot.telegram.sendMessage(
+                        user.chat_id,
+                        `🕌 Reminder: ${prayer} prayer is in ${NOTIFICATION_LEAD_MINUTES} minutes.🕌🙏`
+                      );
                     
                     scheduleOne(key, notificationTimeMs, sendFn);
                     const notifyTime = new Date(notificationTimeMs).toLocaleTimeString('en-US', { timeZone: timezone });

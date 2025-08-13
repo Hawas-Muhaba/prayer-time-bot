@@ -14,8 +14,9 @@ function initializeDatabase() {
                 CREATE TABLE IF NOT EXISTS users (
                     chat_id INTEGER PRIMARY KEY,
                     first_name TEXT,
-                    latitude REAL NOT NULL,
-                    longitude REAL NOT NULL,
+                    language_code TEXT DEFAULT 'en',
+                    latitude REAL, 
+                    longitude REAL,
                     is_active INTEGER DEFAULT 1,
                     timezone TEXT
                 )
@@ -34,6 +35,20 @@ async function saveUserLocation(chat_id, first_name, latitude, longitude) {
          ON CONFLICT(chat_id) DO UPDATE SET first_name=excluded.first_name, latitude=excluded.latitude, longitude=excluded.longitude, is_active=1;`,
         [chat_id, first_name, latitude, longitude]
     );
+}
+async function setUserLanguage(chat_id, language_code){
+    const db = await initializeDatabase();
+    //insert a new user with their language or update existing one
+    await db.run(
+        `INSERT INTO users (chat_id, language_code) VALUES (?, ?)
+        ON CONFLICT(chat_id) DO UPDATE SET language_code = excluded.language_code;`,
+        [chat_id, language_code]
+    );
+}
+
+async function getUser(chat_id){
+    const db = await initializeDatabase();
+    return await db.get('SELECT * FROM users WHERE chat_id = ?', [chat_id]);
 }
 
 async function getAllActiveUsers() {
@@ -56,5 +71,7 @@ module.exports = {
     saveUserLocation,
     getAllActiveUsers, 
     setUserActive,
-    deleteUser
+    deleteUser,
+    setUserLanguage,
+    getUser
 };
