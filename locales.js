@@ -36,7 +36,7 @@ const locales = {
       `✅ Location set to "${city}". I will send daily reminders.\n\nHere's what else you can do:`,
     PRAYER_TIMES_TODAY: "Today's Prayer Times:",
     DONATE_MSG:
-      "Thank you for considering a donation! 🙏\n\nThis project is run by volunteers. Your support helps cover server costs.\n\n**Bank:** International Bank of Code\n**Account:** 123-456-7890",
+      "Thank you for considering a donation! 🕌\n\nThis project is run by volunteers. Your support helps cover our server costs and inspires us to continue our work for the community.\n\n**International Bank:**\nBank Name: First Abu Dhabi Bank PJSC\nAccount: 1416006013486001\n\n**Local Bank (Ethiopia):**\nBank Name: Commercial Bank of Ethiopia\nAccount: 1000443073012",
     // --- ADD THESE NEW KEYS ---
 
     // For the Settings Inline Keyboard Buttons
@@ -94,7 +94,7 @@ const locales = {
       `✅ አካባቢዎ ወደ "${city}" ተቀናብሯል። በየቀኑ ማሳሰቢያዎችን እልካለሁ።\n\nሌሎች ማድረግ የሚችሏቸው ነገሮች እነሆ:`,
     PRAYER_TIMES_TODAY: "የዛሬው የሰላት ሰዓታት:",
     DONATE_MSG:
-      "ለልገሳ ስላሰቡ እናመሰግናለን! 🕌\n\nይህ ፕሮጀክት በበጎ ፈቃደኞች የሚሰራ ነው። የእርስዎ ድጋፍ የአገልጋይ ወጪዎችን ለመሸፈን ይረዳል።\n\n**ባንክ:** አለም አቀፍ የኮድ ባንክ\n**አካውንት:** 123-456-7890",
+      "ለልገሳ ስላሰቡ ከልብ እናመሰግናለን! 🕌\n\nይህ ፕሮጀክት በበጎ ፈቃደኞች የሚሰራ ነው። የእርስዎ ድጋፍ የአገልጋይ ወጪዎችን ለመሸፈን ይረዳል እንዲሁም ለማህበረሰቡ የምናደርገውን ስራ እንድንቀጥል ያነሳሳናል።\n\n**አለም አቀፍ ባንክ:**\nየባንክ ስም: First Abu Dhabi Bank PJSC\nየሂሳብ ቁጥር: 1416006013486001\n\n**የሀገር ውስጥ ባንክ (ኢትዮጵያ):**\nየባንክ ስም: Commercial Bank of Ethiopia\nየሂሳብ ቁጥር: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ ማሳወቂያዎችን አቁም",
     SETTINGS_BTN_RESUME_LABEL: "▶️ ማሳወቂያዎችን አስቀጥል",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ መረጃዬን ሰርዝ",
@@ -144,7 +144,7 @@ const locales = {
       `✅ Iddoon kee gara "${city}"tti qindaa'eera. Guyyaa guyyaan yaadachiisa nan erga.\n\nKunoo wantoota biroo gochuu dandeessu:`,
     PRAYER_TIMES_TODAY: "Yeroo Salaataa Kan Har'aa:",
     DONATE_MSG:
-      "Gumaacha gochuuf yaaduu keessaniif galatoomaa! 🕌\n\nProojektiin kun tola ooltotaan hojjetama. Deeggarsi keessan baasii sarvarii uwwisuuf gargaara.\n\n**Baankii:** Baankii Koodii Idil-addunyaa\n**Herrega:** 123-456-7890",
+      "Gumaacha gochuuf yaaduu keessaniif galatoomaa! 🕌\n\nProojektiin kun tola ooltotaan hojjetama. Deeggarsi keessan baasii sarvarii uwwisuuf fi hojii hawaasaaf fayyadu akka itti fufnuuf nu jajjabeessa.\n\n**Baankii Idil-addunyaa:**\nMaqaa Baankii: First Abu Dhabi Bank PJSC\nHerrega: 1416006013486001\n\n**Baankii Biyya Keessaa (Itoophiyaa):**\nMaqaa Baankii: Commercial Bank of Ethiopia\nHerrega: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Beeksisoota Dhaabi",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Beeksisoota Itti Fufi",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Odeeffannoo Koo Haqi",
@@ -193,7 +193,7 @@ const locales = {
       `✅ ቦታኻ ናብ "${city}" ተዳልዩ ኣሎ። መዓልታዊ መዘኻኸሪታት ክሰድ እየ።\n\nእንሆ ካልኦት ክትገብሮም ትኽእል ነገራት:`,
     PRAYER_TIMES_TODAY: "ናይ ሎሚ ናይ ሰላት ግዝያት:",
     DONATE_MSG:
-      "ንልገሳ ስለዝሓሰብኩም ነመስግን! 🕌\n\nእዚ ፕሮጀክት ብወለንተኛታት ዝካየድ እዩ። ደገፍኩም ወጻኢታት ሰርቨር ንምሽፋን ይሕግዝ።\n\n**ባንኪ:** ኣህጉራዊ ባንኪ ኮድ\n**ሕሳብ:** 123-456-7890",
+      "ንልገሳ ስለዝሓሰብኩም ነመስግን! 🕌\n\nእዚ ፕሮጀክት ብወለንተኛታት ዝካየድ እዩ። ደገፍኩም ወጻኢታት ሰርቨር ንምሽፋንን ነቲ ንማሕበረሰብ እንገብሮ ስራሕ ንኽንቅጽል የትብዓና።\n\n**ኣህጉራዊ ባንኪ:**\nስም ባንኪ: First Abu Dhabi Bank PJSC\nቁጽሪ ሕሳብ: 1416006013486001\n\n**ናይ ዓዲ ባንኪ (ኢትዮጵያ):**\nስም ባንኪ: Commercial Bank of Ethiopia\nቁጽሪ ሕሳብ: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ መፍለጢታት ደው ኣብል",
     SETTINGS_BTN_RESUME_LABEL: "▶️ መፍለጢታት ቀጽል",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ ዳታይ ሰርዝ",
@@ -243,7 +243,7 @@ const locales = {
       `✅ تم تعيين الموقع إلى "${city}". سأرسل تذكيرات يومية.\n\nإليك ما يمكنك فعله أيضاً:`,
     PRAYER_TIMES_TODAY: "أوقات الصلاة لليوم:",
     DONATE_MSG:
-      "شكراً لك على التفكير في التبرع! 🕌\n\nهذا المشروع يديره متطوعون. دعمك يساعد في تغطية تكاليف الخادم.\n\n**البنك:** بنك الكود الدولي\n**الحساب:** 123-456-7890",
+      "شكراً لتفكيركم في التبرع! 🕌\n\nهذا المشروع يديره متطوعون. دعمكم يساعدنا في تغطية تكاليف الخادم ويلهمنا لمواصلة عملنا لخدمة المجتمع.\n\n**البنك الدولي:**\nاسم البنك: First Abu Dhabi Bank PJSC\nرقم الحساب: 1416006013486001\n\n**بنك محلي (إثيوبيا):**\nاسم البنك: Commercial Bank of Ethiopia\nرقم الحساب: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ إيقاف الإشعارات مؤقتاً",
     SETTINGS_BTN_RESUME_LABEL: "▶️ استئناف الإشعارات",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ حذف بياناتي",
@@ -292,7 +292,7 @@ const locales = {
       `✅ BAXA "${city}" ilah qindeenime. Kulli ayro kassiisinuh siih ruubah.\n\nTonnah gactah tanim:`,
     PRAYER_TIMES_TODAY: "Assaaro Salat Wakti:",
     DONATE_MSG:
-      "Gacoh fakarsiteemih galato! 🕌\n\nAh project Tola-oole marih abah. Siinih dooqah server masruufuh maqarru.\n\n**Bank:** Bankih Codeh Addunya\n**Hisab:** 123-456-7890",
+      "Gacoh fakarsiteemih galato! 🕌\n\nAh project Tola-oole marih abah. Siinih dooqah server masruufuh maqarru kee ni ummattah gadda abak manonih nek kassisa.\n\n**Bankih Addunya:**\nBankih Magac: First Abu Dhabi Bank PJSC\nHisab: 1416006013486001\n\n**Dabqa Banki (Ethiopia):**\nBankih Magac: Commercial Bank of Ethiopia\nHisab: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Oobisah ruqsus",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Oobisah idig gibdi",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Yi xog he",
@@ -343,7 +343,7 @@ const locales = {
       `✅ Goobta waxaa loo dejiyay "${city}". Waxaan soo diri doonaa xusuusin maalinle ah.\n\nWaxyaabaha kale ee aad sameyn karto waa kuwan:`,
     PRAYER_TIMES_TODAY: "Waqtiyada Salaadda ee Maanta:",
     DONATE_MSG:
-      "Waad ku mahadsan tahay tixgelinta deeqda! 🕌\n\nMashruucan waxaa wada mutadawiciin. Taageeradaadu waxay caawinaysaa inay daboosho kharashka server-ka.\n\n**Bangiga:** Bangiga Caalamiga ee Koodka\n**Akoon:** 123-456-7890",
+      "Waad ku mahadsan tahay tixgelinta deeqda! 🕌\n\nMashruucan waxaa wada mutadawiciin. Taageeradaadu waxay naga caawinaysaa inaan daboolno kharashka server-ka waxayna nagu dhiirigelinaysaa inaan sii wadno shaqadeena bulshada.\n\n**Bangiga Caalamiga ah:**\nMagaca Bangiga: First Abu Dhabi Bank PJSC\nAkoon: 1416006013486001\n\n**Bangiga Gudaha (Itoobiya):**\nMagaca Bangiga: Commercial Bank of Ethiopia\nAkoon: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Hakad geli Ogeysiisyada",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Dib u bilow Ogeysiisyada",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Tirtir Xogteyda",
@@ -394,7 +394,7 @@ const locales = {
       `✅ Konum "${city}" olarak ayarlandı. Günlük hatırlatıcılar göndereceğim.\n\nİşte yapabileceğiniz diğer şeyler:`,
     PRAYER_TIMES_TODAY: "Bugünün Namaz Vakitleri:",
     DONATE_MSG:
-      "Bağış yapmayı düşündüğünüz için teşekkür ederiz! 🕌\n\nBu proje gönüllüler tarafından yürütülmektedir. Desteğiniz sunucu maliyetlerini karşılamaya yardımcı olur.\n\n**Banka:** Uluslararası Kod Bankası\n**Hesap:** 123-456-7890",
+      "Bağış yapmayı düşündüğünüz için teşekkür ederiz! 🕌\n\nBu proje gönüllüler tarafından yürütülmektedir. Desteğiniz sunucu maliyetlerimizi karşılamamıza ve topluluk için çalışmalarımıza devam etmemiz için bizi teşvik etmeye yardımcı olur.\n\n**Uluslararası Banka:**\nBanka Adı: First Abu Dhabi Bank PJSC\nHesap Numarası: 1416006013486001\n\n**Yerel Banka (Etiyopya):**\nBanka Adı: Commercial Bank of Ethiopia\nHesap Numarası: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Bildirimleri Duraklat",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Bildirimlere Devam Et",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Verilerimi Sil",
@@ -446,7 +446,7 @@ const locales = {
       `✅ مقام "${city}" پر متعین ہو گیا ہے۔ میں روزانہ یاد دہانیاں بھیجوں گا۔\n\nیہاں کچھ اور چیزیں ہیں جو آپ کر سکتے ہیں:`,
     PRAYER_TIMES_TODAY: "آج کے نماز کے اوقات:",
     DONATE_MSG:
-      "عطیہ پر غور کرنے کے لیے آپ کا شکریہ! 🕌\n\nیہ پروجیکٹ رضاکاروں کے ذریعے چلایا جاتا ہے۔ آپ کی حمایت سرور کے اخراجات کو پورا کرنے میں مدد کرتی ہے۔\n\n**بینک:** انٹرنیشنل بینک آف کوڈ\n**اکاؤنٹ:** 123-456-7890",
+      "عطیہ پر غور کرنے کے لیے آپ کا شکریہ! 🕌\n\nیہ پروجیکٹ رضاکار چلاتے ہیں۔ آپ کی حمایت سے سرور کے اخراجات پورے کرنے میں مدد ملتی ہے اور ہمیں کمیونٹی کے لیے مزید کام جاری رکھنے کی ترغیب ملتی ہے۔\n\n**بین الاقوامی بینک:**\nبینک کا نام: First Abu Dhabi Bank PJSC\nاکاؤنٹ نمبر: 1416006013486001\n\n**مقامی بینک (ایتھوپیا):**\nبینک کا نام: Commercial Bank of Ethiopia\nاکاؤنٹ نمبر: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ اطلاعات روکیں",
     SETTINGS_BTN_RESUME_LABEL: "▶️ اطلاعات دوبارہ شروع کریں",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ میرا ڈیٹا حذف کریں",
@@ -496,7 +496,7 @@ const locales = {
       `✅ स्थान "${city}" पर सेट हो गया है। मैं दैनिक अनुस्मारक भेजूंगा।\n\nयहाँ और भी कुछ है जो आप कर सकते हैं:`,
     PRAYER_TIMES_TODAY: "आज की नमाज़ का समय:",
     DONATE_MSG:
-      "दान पर विचार करने के लिए धन्यवाद! 🕌\n\nयह परियोजना स्वयंसेवकों द्वारा चलाई जाती है। आपका समर्थन सर्वर लागत को कवर करने में मदद करता है।\n\n**बैंक:** इंटरनेशनल बैंक ऑफ कोड\n**खाता:** 123-456-7890",
+      "दान पर विचार करने के लिए धन्यवाद! 🕌\n\nयह परियोजना स्वयंसेवकों द्वारा चलाई जाती है। आपका समर्थन हमें सर्वर की लागतों को कवर करने में मदद करता है और हमें समुदाय के लिए अपना काम जारी रखने के लिए प्रेरित करता है।\n\n**अंतर्राष्ट्रीय बैंक:**\nबैंक का नाम: First Abu Dhabi Bank PJSC\nखाता संख्या: 1416006013486001\n\n**स्थानीय बैंक (इथियोपिया):**\nबैंक का नाम: Commercial Bank of Ethiopia\nखाता संख्या: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ सूचनाएं रोकें",
     SETTINGS_BTN_RESUME_LABEL: "▶️ सूचनाएं फिर से शुरू करें",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ मेरा डेटा हटाएं",
@@ -546,7 +546,7 @@ const locales = {
       `✅ Местоположение установлено на "${city}". Я буду отправлять ежедневные напоминания.\n\nЧто еще вы можете сделать:`,
     PRAYER_TIMES_TODAY: "Время намаза на сегодня:",
     DONATE_MSG:
-      "Спасибо, что решили сделать пожертвование! 🕌\n\nЭтот проект поддерживается волонтерами. Ваша поддержка помогает покрыть расходы на сервер.\n\n**Банк:** Международный Банк Кода\n**Счет:** 123-456-7890",
+      "Спасибо, что решили сделать пожертвование! 🕌\n\nЭтот проект поддерживается волонтерами. Ваша поддержка помогает покрыть расходы на сервер и вдохновляет нас продолжать нашу работу для сообщества.\n\n**Международный банк:**\nНазвание банка: First Abu Dhabi Bank PJSC\nСчет: 1416006013486001\n\n**Местный банк (Эфиопия):**\nНазвание банка: Commercial Bank of Ethiopia\nСчет: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Приостановить уведомления",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Возобновить уведомления",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Удалить мои данные",
@@ -597,7 +597,7 @@ const locales = {
       `✅ Lokasi diatur ke "${city}". Saya akan mengirim pengingat harian.\n\nBerikut hal lain yang bisa Anda lakukan:`,
     PRAYER_TIMES_TODAY: "Waktu Sholat Hari Ini:",
     DONATE_MSG:
-      "Terima kasih telah mempertimbangkan untuk berdonasi! 🕌\n\nProyek ini dijalankan oleh sukarelawan. Dukungan Anda membantu menutupi biaya server.\n\n**Bank:** Bank Internasional Kode\n**Rekening:** 123-456-7890",
+      "Terima kasih telah mempertimbangkan untuk berdonasi! 🕌\n\nProyek ini dijalankan oleh sukarelawan. Dukungan Anda membantu menutupi biaya server kami dan menginspirasi kami untuk melanjutkan pekerjaan kami untuk komunitas.\n\n**Bank Internasional:**\nNama Bank: First Abu Dhabi Bank PJSC\nNomor Rekening: 1416006013486001\n\n**Bank Lokal (Etiopia):**\nNama Bank: Commercial Bank of Ethiopia\nNomor Rekening: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Jeda Notifikasi",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Lanjutkan Notifikasi",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Hapus Data Saya",
@@ -648,7 +648,7 @@ const locales = {
       `✅ Joylashuv "${city}" ga o'rnatildi. Men har kuni eslatmalar yuboraman.\n\nQuyida siz qila oladigan boshqa amallar:`,
     PRAYER_TIMES_TODAY: "Bugungi namoz vaqtlari:",
     DONATE_MSG:
-      "Hayriya qilishni o'ylaganingiz uchun tashakkur! 🕌\n\nBu loyiha ko'ngillilar tomonidan yuritiladi. Sizning qo'llab-quvvatlashingiz server xarajatlarini qoplashga yordam beradi.\n\n**Bank:** Xalqaro Kod Banki\n**Hisob raqam:** 123-456-7890",
+      "Hayriya qilishni o'ylaganingiz uchun tashakkur! 🕌\n\nBu loyiha ko'ngillilar tomonidan yuritiladi. Sizning qo'llab-quvvatlashingiz server xarajatlarini qoplashga yordam beradi va bizni jamiyat uchun ishimizni davom ettirishga ilhomlantiradi.\n\n**Xalqaro Bank:**\nBank nomi: First Abu Dhabi Bank PJSC\nHisob raqam: 1416006013486001\n\n**Mahalliy Bank (Efiopiya):**\nBank nomi: Commercial Bank of Ethiopia\nHisob raqam: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Bildirishnomalarni to'xtatish",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Bildirishnomalarni davom ettirish",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Ma'lumotlarimni o'chirish",
@@ -700,7 +700,7 @@ const locales = {
       `✅ Localização definida para "${city}". Enviarei lembretes diários.\n\nVeja o que mais você pode fazer:`,
     PRAYER_TIMES_TODAY: "Horários de Oração de Hoje:",
     DONATE_MSG:
-      "Obrigado por considerar uma doação! 🕌\n\nEste projeto é administrado por voluntários. Seu apoio ajuda a cobrir os custos do servidor.\n\n**Banco:** Banco Internacional do Código\n**Conta:** 123-456-7890",
+      "Obrigado por considerar uma doação! 🕌\n\nEste projeto é administrado por voluntários. Seu apoio ajuda a cobrir nossos custos de servidor e nos inspira a continuar nosso trabalho para a comunidade.\n\n**Banco Internacional:**\nNome do Banco: First Abu Dhabi Bank PJSC\nConta: 1416006013486001\n\n**Banco Local (Etiópia):**\nNome do Banco: Commercial Bank of Ethiopia\nConta: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Pausar Notificações",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Retomar Notificações",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Excluir Meus Dados",
@@ -751,7 +751,7 @@ const locales = {
       `✅ موقعیت مکانی روی «${city}» تنظیم شد. من یادآوری‌های روزانه ارسال خواهم کرد.\n\nکارهای دیگری که می‌توانید انجام دهید:`,
     PRAYER_TIMES_TODAY: "اوقات شرعی امروز:",
     DONATE_MSG:
-      "از اینکه به حمایت مالی فکر کردید سپاسگزاریم! 🕌\n\nاین پروژه توسط داوطلبان اداره می‌شود. حمایت شما به پوشش هزینه‌های سرور کمک می‌کند.\n\n**بانک:** بانک بین‌المللی کد\n**حساب:** 123-456-7890",
+      "از اینکه به حمایت مالی فکر کردید سپاسگزاریم! 🕌\n\nاین پروژه توسط داوطلبان اداره می‌شود. حمایت شما به پوشش هزینه‌های سرور ما کمک می‌کند و به ما انگیزه می‌دهد تا به کار خود برای جامعه ادامه دهیم.\n\n**بانک بین‌المللی:**\nنام بانک: First Abu Dhabi Bank PJSC\nشماره حساب: 1416006013486001\n\n**بانک داخلی (اتیوپی):**\nنام بانک: Commercial Bank of Ethiopia\nشماره حساب: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ توقف موقت اعلان‌ها",
     SETTINGS_BTN_RESUME_LABEL: "▶️ ادامه اعلان‌ها",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ حذف داده‌های من",
@@ -803,7 +803,7 @@ const locales = {
       `✅ Lokasi ditetapkan kepada "${city}". Saya akan menghantar peringatan harian.\n\nBerikut adalah perkara lain yang boleh anda lakukan:`,
     PRAYER_TIMES_TODAY: "Waktu Solat Hari Ini:",
     DONATE_MSG:
-      "Terima kasih kerana mempertimbangkan untuk menderma! 🕌\n\nProjek ini dijalankan oleh sukarelawan. Sokongan anda membantu menampung kos pelayan.\n\n**Bank:** Bank Antarabangsa Kod\n**Akaun:** 123-456-7890",
+      "Terima kasih kerana mempertimbangkan untuk menderma! 🕌\n\nProjek ini dijalankan oleh sukarelawan. Sokongan anda membantu menampung kos pelayan kami dan memberi inspirasi kepada kami untuk meneruskan kerja kami untuk komuniti.\n\n**Bank Antarabangsa:**\nNama Bank: First Abu Dhabi Bank PJSC\nNombor Akaun: 1416006013486001\n\n**Bank Tempatan (Ethiopia):**\nNama Bank: Commercial Bank of Ethiopia\nNombor Akaun: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Jeda Pemberitahuan",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Sambung Semula Pemberitahuan",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Padam Data Saya",
@@ -854,7 +854,7 @@ const locales = {
       `✅ Місцезнаходження встановлено на "${city}". Я надсилатиму щоденні нагадування.\n\nЩо ще ви можете зробити:`,
     PRAYER_TIMES_TODAY: "Час намазу на сьогодні:",
     DONATE_MSG:
-      "Дякуємо, що вирішили зробити пожертву! 🕌\n\nЦей проект підтримується волонтерами. Ваша підтримка допомагає покрити витрати на сервер.\n\n**Банк:** Міжнародний Банк Коду\n**Рахунок:** 123-456-7890",
+      "Дякуємо, що вирішили зробити пожертву! 🕌\n\nЦей проект підтримується волонтерами. Ваша підтримка допомагає покрити витрати на сервер і надихає нас продовжувати нашу роботу для спільноти.\n\n**Міжнародний банк:**\nНазва банку: First Abu Dhabi Bank PJSC\nРахунок: 1416006013486001\n\n**Місцевий банк (Ефіопія):**\nНазва банку: Commercial Bank of Ethiopia\nРахунок: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Призупинити сповіщення",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Відновити сповіщення",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Видалити мої дані",
@@ -905,7 +905,7 @@ const locales = {
       `✅ Posizione impostata su "${city}". Invierò promemoria giornalieri.\n\nEcco cos'altro puoi fare:`,
     PRAYER_TIMES_TODAY: "Orari di Preghiera di Oggi:",
     DONATE_MSG:
-      "Grazie per aver considerato una donazione! 🕌\n\nQuesto progetto è gestito da volontari. Il tuo supporto aiuta a coprire i costi del server.\n\n**Banca:** Banca Internazionale del Codice\n**Conto:** 123-456-7890",
+      "Grazie per aver considerato una donazione! 🕌\n\nQuesto progetto è gestito da volontari. Il tuo supporto aiuta a coprire i costi del nostro server e ci ispira a continuare il nostro lavoro per la comunità.\n\n**Banca Internazionale:**\nNome della Banca: First Abu Dhabi Bank PJSC\nConto: 1416006013486001\n\n**Banca Locale (Etiopia):**\nNome della Banca: Commercial Bank of Ethiopia\nConto: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Metti in pausa le notifiche",
     SETTINGS_BTN_RESUME_LABEL: "▶️ Riprendi le notifiche",
     SETTINGS_BTN_DELETE_LABEL: "🗑️ Elimina i miei dati",
