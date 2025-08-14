@@ -1,85 +1,133 @@
 // In database.js
-const sqlite3 = require('sqlite3');
-const { open } = require('sqlite');
+const { Pool } = require('pg'); // Import the pg Pool library
 
-let dbPromise;
-
-function initializeDatabase() {
-    if (!dbPromise) {
-        dbPromise = open({
-            filename: './prayerbot.db',
-            driver: sqlite3.Database
-        }).then(async (db) => {
-            await db.exec(`
-                CREATE TABLE IF NOT EXISTS users (
-                    chat_id INTEGER PRIMARY KEY,
-                    first_name TEXT,
-                    language_code TEXT DEFAULT 'en',
-                    latitude REAL, 
-                    longitude REAL,
-                    is_active INTEGER DEFAULT 1,
-                    timezone TEXT
-                )
-            `);
-            console.log("Database connection is open and 'users' table is ready.");
-            return db;
-        });
+// The Pool will automatically use the DATABASE_URL from your .env file or Railway variables.
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    // This is important for many cloud database providers (like Heroku, Railway, etc.)
+    // It allows connections to databases that use self-signed certificates.
+    ssl: {
+        rejectUnauthorized: false
     }
-    return dbPromise;
+});
+
+let isDbInitialized = false;
+
+/**
+ * Initializes the database connection and creates the 'users' table if it doesn't exist.
+ * This function ensures the setup code runs only once.
+ */
+async function initializeDatabase() {
+    // If already initialized, do nothing.
+    if (isDbInitialized) {
+        return;
+    }
+    
+    console.log("Initializing PostgreSQL database connection...");
+    // A "client" is a single connection from the pool.
+    const client = await pool.connect(); 
+    try {
+        // We use dollar-sign placeholders ($1, $2) for PostgreSQL instead of question marks (?).
+        // Data types are more specific: BIGINT for chat_id, DOUBLE PRECISION for lat/lon, BOOLEAN for is_active.
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                chat_id BIGINT PRIMARY KEY,
+                first_name TEXT,
+                language_code VARCHAR(10) DEFAULT 'en',
+                latitude DOUBLE PRECISION,
+                longitude DOUBLE PRECISION,
+                is_active BOOLEAN DEFAULT true,
+                timezone TEXT
+            );
+        `);
+        console.log("'users' table is ready.");
+        isDbInitialized = true; // Set the flag so this doesn't run again.
+    } catch (err) {
+        console.error("FATAL: Error initializing database table:", err);
+        // If the table can't be created, the bot can't function.
+        // It's better to exit so the deployment service restarts it.
+        process.exit(1); 
+    } finally {
+        // IMPORTANT: Always release the client back to the pool when you're done with it.
+        client.release();
+    }
 }
 
+/**
+ * Saves or updates a user's location and language. This is an "UPSERT".
+ */
 async function saveUserLocation(chat_id, first_name, latitude, longitude) {
-    const db = await initializeDatabase();
-    await db.run(
-        `INSERT INTO users (chat_id, first_name, latitude, longitude) VALUES (?, ?, ?, ?)
-         ON CONFLICT(chat_id) DO UPDATE SET first_name=excluded.first_name, latitude=excluded.latitude, longitude=excluded.longitude, is_active=1;`,
-        [chat_id, first_name, latitude, longitude]
-    );
-}
-async function setUserLanguage(chat_id, language_code){
-    const db = await initializeDatabase();
-    //insert a new user with their language or update existing one
-    await db.run(
-        `INSERT INTO users (chat_id, language_code) VALUES (?, ?)
-        ON CONFLICT(chat_id) DO UPDATE SET language_code = excluded.language_code;`,
-        [chat_id, language_code]
-    );
+    const query = `
+        INSERT INTO users (chat_id, first_name, latitude, longitude, is_active)
+        VALUES ($1, $2, $3, $4, true)
+        ON CONFLICT (chat_id) DO UPDATE SET
+            first_name = EXCLUDED.first_name,
+            latitude = EXCLUDED.latitude,
+            longitude = EXCLUDED.longitude,
+            is_active = true;
+    `;
+    await pool.query(query, [chat_id, first_name, latitude, longitude]);
 }
 
-async function getUser(chat_id){
-    const db = await initializeDatabase();
-    return await db.get('SELECT * FROM users WHERE chat_id = ?', [chat_id]);
+/**
+ * Updates or creates a user just to set their language preference.
+ */
+async function setUserLanguage(chat_id, language_code) {
+    const query = `
+        INSERT INTO users (chat_id, language_code) VALUES ($1, $2)
+        ON CONFLICT (chat_id) DO UPDATE SET language_code = EXCLUDED.language_code;
+    `;
+    await pool.query(query, [chat_id, language_code]);
 }
 
+/**
+ * Retrieves a single user's data from the database.
+ */
+async function getUser(chat_id) {
+    const result = await pool.query('SELECT * FROM users WHERE chat_id = $1', [chat_id]);
+    return result.rows[0]; // Returns the first row found, or undefined if no user is found.
+}
+
+/**
+ * Retrieves all users who have notifications enabled.
+ */
 async function getAllActiveUsers() {
-    const db = await initializeDatabase();
-    return await db.all('SELECT * FROM users WHERE is_active = 1');
+    const result = await pool.query('SELECT * FROM users WHERE is_active = true');
+    return result.rows;
 }
-async function setUserActive(chat_id, isActive){
-    const db = await initializeDatabase();
-    const activeState = isActive ? 1: 0;
-    await db.run('UPDATE users SET is_active = ? WHERE chat_id = ?', [activeState, chat_id]);
-    console.log(`Set user ${chat_id} active status to ${isActive}`);
+
+/**
+ * Sets a user's notification preference (active or paused).
+ */
+async function setUserActive(chat_id, isActive) {
+    await pool.query('UPDATE users SET is_active = $1 WHERE chat_id = $2', [isActive, chat_id]);
 }
-async function deleteUser(chat_id){
-    const db = await initializeDatabase();
-    await db.run('DELETE FROM users WHERE chat_id = ?', [chat_id]);
-    console.log(`Deleted user ${chat_id} from database.`);
+
+/**
+ * Deletes a user from the database.
+ */
+async function deleteUser(chat_id) {
+    await pool.query('DELETE FROM users WHERE chat_id = $1', [chat_id]);
 }
+
+/**
+ * Counts the total number of users in the database.
+ */
 async function getTotalUserCount() {
-  const db = await initializeDatabase();
-  // The 'COUNT(*)' SQL function is highly optimized for counting rows.
-  // We use 'as count' to give the result column a name.
-  const result = await db.get("SELECT COUNT(*) as count FROM users");
-  return result.count;
+    const result = await pool.query('SELECT COUNT(*) as count FROM users');
+    // The result from pg is a string, so we parse it to an integer.
+    return parseInt(result.rows[0].count, 10);
 }
+
+
+// Export all the functions so index.js and scheduler.js can use them.
 module.exports = {
     initializeDatabase,
     saveUserLocation,
-    getAllActiveUsers, 
-    setUserActive,
-    deleteUser,
     setUserLanguage,
     getUser,
+    getAllActiveUsers,
+    setUserActive,
+    deleteUser,
     getTotalUserCount
 };
