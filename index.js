@@ -16,7 +16,7 @@ const {
 } = require("./database.js");
 const { getPrayerTimes } = require("./api.js");
 const { geocodeCity } = require("./geocode.js");
-const { startScheduler } = require("./scheduler.js");
+const { startScheduler, onboardNewUser } = require("./scheduler.js");
 const { t, locales } = require("./locales.js"); // Import both
 
 async function main() {
@@ -286,12 +286,13 @@ bot.command("stats", async (ctx) => {
     const user = await getUser(ctx.from.id);
     const lang = user?.language_code || "en";
     const { latitude, longitude } = ctx.message.location;
+    const { id: chat_id, first_name } = ctx.from;
     await saveUserLocation(
-      ctx.from.id,
-      ctx.from.first_name,
+      chat_id, first_name,
       latitude,
       longitude
     );
+    await onboardNewUser({ chat_id, latitude, longitude });
     await ctx.reply(t(lang, "LOCATION_SAVED"), getMainMenu(lang));
     await sendPrayerTimes(ctx, latitude, longitude);
   });
@@ -304,12 +305,18 @@ bot.command("stats", async (ctx) => {
     const locations = await geocodeCity(ctx.message.text);
     if (locations && locations.length > 0) {
       const firstResult = locations[0];
+      const { id: chat_id, first_name } = ctx.from;
       await saveUserLocation(
-        ctx.from.id,
-        ctx.from.first_name,
+        chat_id,
+        first_name,
         firstResult.lat,
         firstResult.lon
       );
+      await onboardNewUser({
+        chat_id,
+        latitude: firstResult.lat,
+        longitude: firstResult.lon,
+      });
       await ctx.reply(
         t(lang, "LOCATION_SET_TO", firstResult.name),
         getMainMenu(lang)

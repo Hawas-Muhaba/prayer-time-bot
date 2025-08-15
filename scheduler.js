@@ -125,5 +125,24 @@ function startScheduler(bot) {
     }
   });
 }
+async function onboardNewUser(user) {
+  console.log(
+    `Onboarding new user ${user.chat_id} by fetching initial prayer times...`
+  );
+  try {
+    const aladhanData = await fetchAladhanTimings(
+      user.latitude,
+      user.longitude,
+      user.method || DEFAULT_METHOD
+    );
+    await db.updateUserPrayerTimes(user.chat_id, {
+      timings: aladhanData.timings,
+      timezone: aladhanData.meta.timezone,
+    });
+    console.log(`Successfully onboarded user ${user.chat_id}.`);
+  } catch (err) {
+    console.error(`Failed to onboard user ${user.chat_id}:`, err.message);
+  }
+}
 
-module.exports = { startScheduler };
+module.exports = { startScheduler, onboardNewUser };
