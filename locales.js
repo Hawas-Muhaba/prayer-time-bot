@@ -4,6 +4,9 @@ const locales = {
     MENU_SETTINGS: "⚙️ Settings",
     MENU_DONATE: "❤️ Donate",
     MENU_HELP: "❓ Help",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) =>`
+    🕌 Reminder: ${prayerName} prayer is in ${minutes} minutes. 🕌🙏\nTime: ${time} (${timezone})`,
+
     // PRAYER_TIMES_TODAY: "Today's Prayer Times:",
     FETCHING_PRAYER_TIMES: "Fetching today's prayer times for you...",
     PRAYER_TIMES_FETCH_ERROR:
@@ -68,6 +71,8 @@ const locales = {
     MENU_SETTINGS: "⚙️ ቅንብሮች",
     MENU_DONATE: "❤️ ይለግሱ",
     MENU_HELP: "❓ እገዛ",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 ማስታወሻ: የ${prayerName} ሰላት ከ${minutes} ደቂቃ በኋላ ነው። 🕌🙏\nሰዓት: ${time} (${timezone})`,
     FETCHING_PRAYER_TIMES: "የዛሬውን የሰላት ሰዓታት በመፈለግ ላይ ነው...",
     PRAYER_TIMES_FETCH_ERROR: "ይቅርታ፣ ለዚያ አካባቢ የሰላት ሰዓታትን ማግኘት አልቻልኩም።",
     CITY_NOT_FOUND:
@@ -143,6 +148,8 @@ const locales = {
     LOCATION_SET_TO: (city) =>
       `✅ Iddoon kee gara "${city}"tti qindaa'eera. Guyyaa guyyaan yaadachiisa nan erga.\n\nKunoo wantoota biroo gochuu dandeessu:`,
     PRAYER_TIMES_TODAY: "Yeroo Salaataa Kan Har'aa:",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Yaadachiisa: Salaanni ${prayerName} daqiiqaa ${minutes} booda ni ta'a. 🕌🙏\nYeroo: ${time} (${timezone})`,
     DONATE_MSG:
       "Gumaacha gochuuf yaaduu keessaniif galatoomaa! 🕌\n\nProojektiin kun tola ooltotaan hojjetama. Deeggarsi keessan baasii sarvarii uwwisuuf fi hojii hawaasaaf fayyadu akka itti fufnuuf nu jajjabeessa.\n\n**Baankii Idil-addunyaa:**\nMaqaa Baankii: First Abu Dhabi Bank PJSC\nHerrega: 1416006013486001\n\n**Baankii Biyya Keessaa (Itoophiyaa):**\nMaqaa Baankii: Commercial Bank of Ethiopia\nHerrega: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Beeksisoota Dhaabi",
@@ -187,6 +194,8 @@ const locales = {
     LANG_UPDATED: "ቋንቋ ናብ ትግርኛ ተቐይሩ። 🇪🇷\n\nሕጂ፣ ንምጅማር በጃኻ ቦታኻ ኣካፍል።",
     SHARE_LOCATION_PROMPT:
       '📱 **ኣብ ሞባይል:** ነታ "ቦታይ ኣካፍል" እትብል መላግቦ ተጠቐም። በጃኹም ናይ ቦታኹም (Location/GPS) ምውላዕኹም ኣረጋግጹ።\n💻 **ኣብ ኮምፒተር:** ስም ከተማኻ ጽሓፍ።',
+      NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 መዘኻኸሪ: ናይ ${prayerName} ሰላት ድሕሪ ${minutes} ደቒቕ እዩ። 🕌🙏\nሰዓት: ${time} (${timezone})`,
     LOCATION_SAVED:
       "✅ ቦታኻ ተመዝጊቡ ኣሎ! መዓልታዊ መዘኻኸሪታት ክሰድ እየ።\n\nእንሆ ካልኦት ክትገብሮም ትኽእል ነገራት:",
     LOCATION_SET_TO: (city) =>
@@ -237,6 +246,8 @@ const locales = {
       "تم تحديث اللغة إلى العربية. 🇸🇦\n\nالآن، يرجى مشاركة موقعك للبدء.",
     SHARE_LOCATION_PROMPT:
       '📱 **على الجوال:** استخدم زر "مشاركة موقعي". يرجى التأكد من تشغيل خدمة تحديد الموقع (GPS).\n💻 **على سطح المكتب:** ببساطة اكتب اسم مدينتك.',
+      NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 تذكير: صلاة ${prayerName} بعد ${minutes} دقائق. 🕌🙏\nالوقت: ${time} (${timezone})`,
     LOCATION_SAVED:
       "✅ تم حفظ موقعك! سأرسل تذكيرات يومية.\n\nإليك ما يمكنك فعله أيضاً:",
     LOCATION_SET_TO: (city) =>
@@ -284,6 +295,8 @@ const locales = {
     CHOOSE_LANG: "Fayxi isi af doorita:",
     LANG_UPDATED:
       "Af Qafarafah geytime. 🇩🇯\n\nAhak, Abak Fayxi isi BAXA qoodi.",
+      NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Kassiisa: ${prayerName} Salat ${minutes} daqiiqak wadirih geytimah. 🕌🙏\nWakti: ${time} (${timezone})`,
     SHARE_LOCATION_PROMPT:
       '📱 **Mobiilil:** "BAXA qoodi" button isticmal. Fayxi isi BAXA (Location/GPS) daffeytem kassiis.\n💻 **Desktopal:** Magaala magac caddi ukutub.',
     LOCATION_SAVED:
@@ -330,6 +343,8 @@ const locales = {
     },
     HELP_MSG:
       "Bootkani wuxuu soo diraa ogeysiisyo maalinle ah oo ku saabsan waqtiga salaadda.\n\n- Isticmaal /start si aad u dejiso luqaddaada iyo goobtaada.\n- Isticmaal liiska doorashooyinka kale.",
+      NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Xusuusin: Salaadda ${prayerName} waa ${minutes} daqiiqo ka dib. 🕌🙏\nWaqtiga: ${time} (${timezone})`,
     WELCOME:
       "As-salamu calaykum! Waxaan ku siin karaa waqtiyada salaadda ee goobtaada.\n\nUgu horreyn, fadlan luqaddaada dooro:",
     CHOOSE_LANG: "Fadlan luqaddaada dooro:",
@@ -384,6 +399,8 @@ const locales = {
     WELCOME:
       "Esselamu aleyküm! Konumunuz için namaz vakitlerini sağlayabilirim.\n\nÖncelikle, lütfen dilinizi seçin:",
     CHOOSE_LANG: "Lütfen dilinizi seçin:",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Hatırlatma: ${prayerName} namazına ${minutes} dakika kaldı. 🕌🙏\nVakit: ${time} (${timezone})`,
     LANG_UPDATED:
       "Dil Türkçe olarak güncellendi. 🇹🇷\n\nŞimdi, başlamak için lütfen konumunuzu paylaşın.",
     SHARE_LOCATION_PROMPT:
@@ -417,6 +434,8 @@ const locales = {
     MENU_SETTINGS: "⚙️ سیٹنگز",
     MENU_DONATE: "❤️ عطیہ کریں",
     MENU_HELP: "❓ مدد",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 یاد دہانی: ${prayerName} کی نماز میں ${minutes} منٹ باقی ہیں۔ 🕌🙏\nوقت: ${time} (${timezone})`,
     FETCHING_PRAYER_TIMES:
       "آج کے نماز کے اوقات آپ کے لیے حاصل کیے جا رہے ہیں...",
     PRAYER_TIMES_FETCH_ERROR:
@@ -481,6 +500,8 @@ const locales = {
       Maghrib: "मग़रिब",
       Isha: "ईशा",
     },
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 अनुस्मारक: ${prayerName} की नमाज़ ${minutes} मिनट में है। 🕌🙏\nसमय: ${time} (${timezone})`,
     HELP_MSG:
       "यह बॉट दैनिक नमाज़ के समय की सूचनाएं भेजता है।\n\n- अपनी भाषा और स्थान सेट करने के लिए /start का उपयोग करें।\n- अन्य विकल्पों के लिए मेनू का उपयोग करें।",
     WELCOME:
@@ -519,6 +540,8 @@ const locales = {
     MENU_DONATE: "❤️ Пожертвовать",
     MENU_HELP: "❓ Помощь",
     FETCHING_PRAYER_TIMES: "Получаю время намаза на сегодня...",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Напоминание: Намаз ${prayerName} через ${minutes} минут. 🕌🙏\nВремя: ${time} (${timezone})`,
     PRAYER_TIMES_FETCH_ERROR:
       "К сожалению, не удалось получить время намаза для этого места.",
     CITY_NOT_FOUND:
@@ -570,6 +593,8 @@ const locales = {
     MENU_DONATE: "❤️ Donasi",
     MENU_HELP: "❓ Bantuan",
     FETCHING_PRAYER_TIMES: "Mengambil waktu sholat hari ini untuk Anda...",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Pengingat: Waktu sholat ${prayerName} ${minutes} menit lagi. 🕌🙏\nWaktu: ${time} (${timezone})`,
     PRAYER_TIMES_FETCH_ERROR:
       "Maaf, saya tidak dapat mengambil waktu sholat untuk lokasi tersebut saat ini.",
     CITY_NOT_FOUND:
@@ -647,6 +672,8 @@ const locales = {
     LOCATION_SET_TO: (city) =>
       `✅ Joylashuv "${city}" ga o'rnatildi. Men har kuni eslatmalar yuboraman.\n\nQuyida siz qila oladigan boshqa amallar:`,
     PRAYER_TIMES_TODAY: "Bugungi namoz vaqtlari:",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Eslatma: ${prayerName} namozi ${minutes} daqiqadan so'ng. 🕌🙏\nVaqt: ${time} (${timezone})`,
     DONATE_MSG:
       "Hayriya qilishni o'ylaganingiz uchun tashakkur! 🕌\n\nBu loyiha ko'ngillilar tomonidan yuritiladi. Sizning qo'llab-quvvatlashingiz server xarajatlarini qoplashga yordam beradi va bizni jamiyat uchun ishimizni davom ettirishga ilhomlantiradi.\n\n**Xalqaro Bank:**\nBank nomi: First Abu Dhabi Bank PJSC\nHisob raqam: 1416006013486001\n\n**Mahalliy Bank (Efiopiya):**\nBank nomi: Commercial Bank of Ethiopia\nHisob raqam: 1000443073012",
     SETTINGS_BTN_PAUSE_LABEL: "⏸️ Bildirishnomalarni to'xtatish",
@@ -685,6 +712,8 @@ const locales = {
       Maghrib: "Maghrib",
       Isha: "Isha",
     },
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Lembrete: A oração ${prayerName} é em ${minutes} minutos. 🕌🙏\nHorário: ${time} (${timezone})`,
     HELP_MSG:
       "Este bot envia notificações diárias dos horários de oração.\n\n- Use /start para definir seu idioma e localização.\n- Use o menu para outras opções.",
     WELCOME:
@@ -741,6 +770,8 @@ const locales = {
     WELCOME:
       "السلام علیکم! من می‌توانم اوقات شرعی را برای موقعیت مکانی شما ارائه دهم.\n\nابتدا، لطفاً زبان خود را انتخاب کنید:",
     CHOOSE_LANG: "لطفاً زبان خود را انتخاب کنید:",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 یادآوری: نماز ${prayerName} تا ${minutes} دقیقه دیگر. 🕌🙏\nزمان: ${time} (${timezone})`,
     LANG_UPDATED:
       "زبان به فارسی تغییر کرد. 🇮🇷\n\nاکنون، برای شروع لطفاً موقعیت مکانی خود را به اشتراک بگذارید.",
     SHARE_LOCATION_PROMPT:
@@ -781,6 +812,8 @@ const locales = {
     CITY_NOT_FOUND:
       "Bandar tidak dijumpai. Sila semak ejaan atau cuba bandar besar yang berdekatan.",
     SETTINGS_HEADER: "Tetapan Pengguna:",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Peringatan: Waktu solat ${prayerName} dalam ${minutes} minit lagi. 🕌🙏\nMasa: ${time} (${timezone})`,
     PRAYERS: {
       Fajr: "Subuh",
       Dhuhr: "Zohor",
@@ -841,6 +874,8 @@ const locales = {
     },
     HELP_MSG:
       "Цей бот надсилає щоденні сповіщення про час намазу.\n\n- Використовуйте /start, щоб встановити мову та місцезнаходження.\n- Використовуйте меню для інших опцій.",
+      NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Нагадування: Намаз ${prayerName} через ${minutes} хвилин. 🕌🙏\nЧас: ${time} (${timezone})`,
     WELCOME:
       "Ассаляму алейкум! Я можу надати час намазу для вашого місцезнаходження.\n\nСпочатку, будь ласка, оберіть вашу мову:",
     CHOOSE_LANG: "Будь ласка, оберіть вашу мову:",
@@ -895,6 +930,8 @@ const locales = {
     WELCOME:
       "As-salamu alaikum! Posso fornire gli orari di preghiera per la tua località.\n\nPer prima cosa, scegli la tua lingua:",
     CHOOSE_LANG: "Per favore, scegli la tua lingua:",
+    NOTIFICATION_REMINDER: (prayerName, minutes, time, timezone) => 
+            `🕌 Promemoria: la preghiera ${prayerName} è tra ${minutes} minuti. 🕌🙏\nOrario: ${time} (${timezone})`,
     LANG_UPDATED:
       "Lingua aggiornata in italiano. 🇮🇹\n\nOra, per favore, condividi la tua posizione per iniziare.",
     SHARE_LOCATION_PROMPT:
