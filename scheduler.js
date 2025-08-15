@@ -1,34 +1,14 @@
-// In scheduler.js
+// The new, production-ready scheduler.js
 const cron = require("node-cron");
 const axios = require("axios");
 const { DateTime } = require("luxon");
 const db = require("./database");
 const { t } = require("./locales.js");
 
-const DEFAULT_PLANNER_CRON = process.env.DAILY_PLAN_CRON || "0 1 * * *";
 const DEFAULT_METHOD = parseInt(process.env.ALADHAN_METHOD || "2", 10);
-const LOOK_AHEAD_HOURS = 24;
+const NOTIFICATION_LEAD_MINUTES = 10;
 
-const scheduledTimeouts = new Map();
-
-function clearAllScheduled() {
-  for (const tid of scheduledTimeouts.values()) clearTimeout(tid);
-  scheduledTimeouts.clear();
-}
-
-function scheduleOne(key, targetMs, sendFn) {
-  const delay = targetMs - Date.now();
-  if (delay <= 0) return null;
-  if (scheduledTimeouts.has(key)) clearTimeout(scheduledTimeouts.get(key));
-
-  const tid = setTimeout(() => {
-    sendFn().finally(() => scheduledTimeouts.delete(key));
-  }, delay);
-
-  scheduledTimeouts.set(key, tid);
-  return tid;
-}
-
+// --- Helper Functions ---
 async function fetchAladhanTimings(lat, lon, method) {
   const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`;
   const res = await axios.get(url);
@@ -37,81 +17,91 @@ async function fetchAladhanTimings(lat, lon, method) {
   return res.data.data;
 }
 
-function startScheduler(bot, options = {}) {
-  const plannerCron = options.plannerCron || DEFAULT_PLANNER_CRON;
-  const dryRun = !!options.dryRun;
+// --- Main Scheduler Logic ---
+function startScheduler(bot) {
+  console.log("Starting production scheduler...");
 
-  console.log(`Scheduler starting. plannerCron="${plannerCron}"`);
-
-  async function dailyPlanner() {
+  // JOB 1: The Daily Fetcher. Runs once a day at 1 AM server time (UTC).
+  cron.schedule("0 1 * * *", async () => {
     console.log(
-      "Scheduler: running daily planner at",
-      new Date().toISOString()
+      "Scheduler (Fetcher): Running daily job to fetch prayer times for all users..."
     );
-    clearAllScheduled();
-    let users;
-    try {
-      users = await db.getAllActiveUsers();
-    } catch (err) {
-      console.error("Scheduler: failed to fetch users from DB:", err);
-      return;
-    }
-
+    const users = await db.getAllActiveUsers();
     if (!users || users.length === 0) {
-      console.log("Scheduler: no active users found, planner finished.");
+      console.log("Scheduler (Fetcher): No active users found.");
       return;
     }
-
-    console.log(
-      `Scheduler: Found ${users.length} active user(s). Processing...`
-    );
 
     for (const user of users) {
-      const chatId = user.chat_id; // Define chatId here for use in error logs
       try {
-        const aladhan = await fetchAladhanTimings(
+        const aladhanData = await fetchAladhanTimings(
           user.latitude,
           user.longitude,
           user.method || DEFAULT_METHOD
         );
-        const timings = aladhan.timings;
-        const dateStr = aladhan.date?.gregorian?.date;
-        const timezone = aladhan.meta?.timezone || "UTC";
-        const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+        // Save the timings and the timezone to the user's record in the DB
+        await db.updateUserPrayerTimes(user.chat_id, {
+          timings: aladhanData.timings,
+          timezone: aladhanData.meta.timezone,
+        });
+      } catch (err) {
+        console.error(
+          `Scheduler (Fetcher): Failed to fetch/save times for user ${user.chat_id}:`,
+          err.message
+        );
+      }
+    }
+    console.log(
+      `Scheduler (Fetcher): Finished updating prayer times for ${users.length} users.`
+    );
+  });
 
-        for (const prayer of prayers) {
-          const timeRaw = timings?.[prayer];
-          if (!timeRaw) continue;
+  // JOB 2: The Notifier. Runs every minute, every day.
+  cron.schedule("* * * * *", async () => {
+    const users = await db.getAllActiveUsers();
+    if (!users || users.length === 0) return; // No users, do nothing
 
-          const hhmm = timeRaw.toString().match(/(\d{1,2}:\d{2})/)?.[1];
-          if (!hhmm) continue;
+    for (const user of users) {
+      // Skip users who don't have prayer times saved yet
+      if (
+        !user.prayer_times ||
+        !user.prayer_times.timings ||
+        !user.prayer_times.timezone
+      )
+        continue;
 
-          const dt = DateTime.fromFormat(
-            `${dateStr} ${hhmm}`,
-            "dd-MM-yyyy HH:mm",
-            { zone: timezone }
+      const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+      const userTimezone = user.prayer_times.timezone;
+      const nowInUserTimezone = DateTime.now().setZone(userTimezone);
+
+      for (const prayer of prayers) {
+        const prayerTimeStr = user.prayer_times.timings[prayer]; // e.g., "12:30"
+        if (!prayerTimeStr) continue;
+
+        // Create a DateTime object for today's prayer time in the user's timezone
+        const [hour, minute] = prayerTimeStr.split(":");
+        const prayerTimeToday = nowInUserTimezone.set({
+          hour,
+          minute,
+          second: 0,
+          millisecond: 0,
+        });
+
+        // Calculate the exact notification time
+        const notificationTime = prayerTimeToday.minus({
+          minutes: NOTIFICATION_LEAD_MINUTES,
+        });
+
+        // THE CRITICAL CHECK:
+        // Is the current time in the user's timezone the same hour and minute as the notification time?
+        if (
+          nowInUserTimezone.hour === notificationTime.hour &&
+          nowInUserTimezone.minute === notificationTime.minute
+        ) {
+          console.log(
+            `Sending ${prayer} notification to user ${user.chat_id}...`
           );
-          if (!dt.isValid) {
-            console.warn("Scheduler: invalid DateTime for", {
-              chatId: user.chat_id,
-              prayer,
-            });
-            continue;
-          }
-
-          const NOTIFICATION_LEAD_MINUTES = 10;
-          const notificationTimeMs =
-            dt.toMillis() - NOTIFICATION_LEAD_MINUTES * 60 * 1000;
-
-          const diffHours =
-            (notificationTimeMs - Date.now()) / (1000 * 60 * 60);
-          if (diffHours <= 0 || diffHours > lookAhead_HOURS) {
-            continue;
-          }
-
-          const key = `${user.chat_id}:${dateStr}:${prayer}`;
-
-          const sendFn = async () => {
+          try {
             const lang = user.language_code || "en";
             const translatedPrayerName = t(lang, "PRAYERS")[prayer];
             const text = t(
@@ -119,63 +109,21 @@ function startScheduler(bot, options = {}) {
               "NOTIFICATION_REMINDER",
               translatedPrayerName,
               NOTIFICATION_LEAD_MINUTES,
-              hhmm,
-              timezone
+              prayerTimeStr,
+              userTimezone
             );
-
-            if (dryRun) {
-              console.log(`[dryRun] would send to ${user.chat_id}:`, text);
-              return;
-            }
-            try {
-              await bot.telegram.sendMessage(user.chat_id, text);
-            } catch (err) {
-              console.error(
-                `Scheduler: failed to send ${prayer} to ${user.chat_id}:`,
-                err?.response?.data || err.message
-              );
-            }
-          };
-
-          scheduleOne(key, notificationTimeMs, sendFn);
-
-          const notifyTime = new Date(notificationTimeMs).toLocaleTimeString(
-            "en-US",
-            { timeZone: timezone }
-          );
-          console.log(
-            `  -> Scheduled ${prayer} reminder for user ${user.chat_id} at ${notifyTime}`
-          );
-        } // End of for (prayer of prayers) loop
-      } catch (err) {
-        console.error(
-          `Scheduler: failed to process user ${user.chat_id}:`,
-          err.message || err
-        );
+            await bot.telegram.sendMessage(user.chat_id, text);
+          } catch (err) {
+            console.error(
+              `Scheduler (Notifier): Failed to send message to ${user.chat_id}:`,
+              err.message
+            );
+            // Here you could add logic to mark the user as inactive if the bot is blocked
+          }
+        }
       }
-    } // End of for (user of users) loop
-
-    console.log(
-      "Scheduler: daily planner finished at",
-      new Date().toISOString()
-    );
-  } // End of dailyPlanner function
-
-  dailyPlanner().catch((e) =>
-    console.error("Scheduler initial run failed:", e)
-  );
-  const task = cron.schedule(plannerCron, () =>
-    dailyPlanner().catch((e) =>
-      console.error("Scheduler dailyPlanner failed:", e)
-    )
-  );
-
-  return {
-    stop: () => {
-      task.stop();
-      clearAllScheduled();
-    },
-  };
+    }
+  });
 }
 
 module.exports = { startScheduler };

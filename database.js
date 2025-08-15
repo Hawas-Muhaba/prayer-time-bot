@@ -13,10 +13,9 @@ const pool = new Pool({
 
 let isDbInitialized = false;
 
-/**
- * Initializes the database connection and creates the 'users' table if it doesn't exist.
- * This function ensures the setup code runs only once.
- */
+
+//Initializes the database connection and creates the 'users' table if it doesn't exist.
+
 async function initializeDatabase() {
     // If already initialized, do nothing.
     if (isDbInitialized) {
@@ -37,7 +36,8 @@ async function initializeDatabase() {
                 latitude DOUBLE PRECISION,
                 longitude DOUBLE PRECISION,
                 is_active BOOLEAN DEFAULT true,
-                timezone TEXT
+                timezone TEXT,
+                prayer_times JSONB
             );
         `);
         console.log("'users' table is ready.");
@@ -118,16 +118,24 @@ async function getTotalUserCount() {
     // The result from pg is a string, so we parse it to an integer.
     return parseInt(result.rows[0].count, 10);
 }
+async function updateUserPrayerTimes(chat_id, prayerTimes) {
+  // The $1::jsonb part tells PostgreSQL to treat the string as a JSON object
+  await pool.query(
+    "UPDATE users SET prayer_times = $1::jsonb WHERE chat_id = $2",
+    [JSON.stringify(prayerTimes), chat_id]
+  );
+}
 
 
 // Export all the functions so index.js and scheduler.js can use them.
 module.exports = {
-    initializeDatabase,
-    saveUserLocation,
-    setUserLanguage,
-    getUser,
-    getAllActiveUsers,
-    setUserActive,
-    deleteUser,
-    getTotalUserCount
+  initializeDatabase,
+  saveUserLocation,
+  setUserLanguage,
+  getUser,
+  getAllActiveUsers,
+  setUserActive,
+  deleteUser,
+  getTotalUserCount,
+  updateUserPrayerTimes,
 };
