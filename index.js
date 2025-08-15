@@ -171,7 +171,17 @@ const getMainMenu = (lang) => {
     Object.values(locales)
       .map((lang) => lang[key])
       .filter(Boolean);
-
+  bot.start(async (ctx) => {
+    const user = await getUser(ctx.from.id);
+    if (user && user.language_code) {
+      await ctx.reply(
+        t(user.language_code, "WELCOME_BACK"),
+        getMainMenu(user.language_code)
+      );
+    } else {
+      await ctx.reply(t("en", "WELCOME"), languageKeyboard);
+    }
+  });
   bot.hears([...allCmdTexts("MENU_SETTINGS"), "/settings"], async (ctx) => {
     const user = await getUser(ctx.from.id);
     const lang = user?.language_code || "en";
