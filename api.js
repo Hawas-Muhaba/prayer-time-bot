@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 async function getPrayerTimes(latitude, longitude) {
-    const url = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=4`;
+    const url = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=2`;
 
     try {
         const response = await axios.get(url);
